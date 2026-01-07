@@ -1,0 +1,101 @@
+# jlreq-ftc
+
+This package provides commands to arrange footnotes into two columns (left and right) at the bottom of the page, designed to visually blend with the `jlreq` document class.
+
+For full details and visual examples, please refer to the [documentation](docs/documentation.pdf).
+
+## Installation
+
+### Using l3build (Recommended)
+
+To install this package using `l3build`, run the following command in the package directory:
+
+```bash
+l3build install
+```
+
+### Manual Installation
+
+Alternatively, you can copy `jlreq-ftc.sty` to a location where LaTeX can find it (e.g., your local `texmf` tree or the same directory as your project `.tex` file).
+
+## Usage
+
+Load the package in your preamble:
+
+```latex
+\usepackage{jlreq-ftc}
+```
+
+## Command Specifications
+
+This package uses its own internal counter (shared between column A and column B) to manage footnote numbers.
+
+### Basic Footnotes
+
+These commands insert a footnote mark and the corresponding text immediately.
+
+- **`\footnoteA{<text>}`**
+- Typesets a footnote in the **left-hand** column.
+- Automatically increments the internal footnote counter.
+
+- **`\footnoteB{<text>}`**
+- Typesets a footnote in the **right-hand** column.
+- Automatically increments the internal footnote counter.
+
+### Separated Mark and Text
+
+You can separate the mark generation from the text definition. This is useful when placing footnotes in titles, tables, or other restricted environments.
+
+- **`\footnotemarkA[<num>]`** / **`\footnotemarkB[<num>]`**
+- Prints the footnote mark for the left (A) or right (B) column.
+- **With `[<num>]`**: Uses the integer `<num>` as the mark number. Does **not** increment the internal counter.
+- **Without `[<num>]`**: Increments the internal counter and uses that value.
+
+- **`\footnotetextA[<num>]{<text>}`** / **`\footnotetextB[<num>]{<text>}`**
+- Defines the footnote text for the left (A) or right (B) column without printing a mark in the main text.
+- **With `[<num>]`**: Uses `<num>` as the label in the footnote area.
+- **Without `[<num>]`**: Uses the current value of the internal counter.
+
+## Example
+
+```latex
+\documentclass{jlreq}
+\usepackage{jlreq-ftc}
+\usepackage{bxjalipsum}
+
+\begin{document}
+% \footnoteA (Left column)
+\jalipsum[1]{kusamakura}~\footnoteA{左の脚注1}\par
+\jalipsum[2]{kusamakura}~\footnoteA{左の脚注2}\par
+\jalipsum[3]{kusamakura}~\footnoteA{左の脚注3}
+
+% \footnoteB (Right column)
+\jalipsum[4]{kusamakura}~\footnoteB{右の脚注1}\par
+\jalipsum[5]{kusamakura}~\footnoteB{右の脚注2}\par
+\jalipsum[6]{kusamakura}~\footnoteB{右の脚注3}
+
+% Separated mark and text
+\jalipsum[7]{kusamakura}~\footnotemarkA
+\jalipsum[8]{kusamakura}~\footnotemarkB
+
+% Text definitions for the marks above
+\footnotetextA[7]{左の脚注4}
+\footnotetextB[8]{右の脚注4}
+\end{document}
+```
+
+## Known Issues and Limitations
+
+Please be aware of the following limitations regarding the design and implementation of this package:
+
+1. **Layout Emulation**:
+This package attempts to reproduce the footnote layout (rules, spacing, indentation) of the `jlreq` class. However, this is an **emulation** created using `minipage` environments and manual spacing. It does not strictly inherit the internal typesetting logic of `jlreq`. There may be slight visual discrepancies depending on the document settings.
+2. **Conflict with Standard `\footnote`**:
+**Do not use the standard `\footnote` command on the same page as `\footnoteA` or `\footnoteB`.**
+Since this package manages its own output routine for two-column footnotes, using the standard `\footnote` command simultaneously will result in **two separate footnote blocks** appearing at the bottom of the page (one handled by LaTeX's standard mechanism and one by this package). This usage is not supported.
+3. **Long Footnotes**:
+Extremely long footnotes that exceed the available height of the page may cause the layout to break or push content off the page. The internal mechanism relies on `minipage`, which limits the ability to break long footnote text across pages.
+
+## License
+
+This package is distributed under the BSD 2-Clause License. See [LICENSE](LICENSE).
