@@ -1,6 +1,6 @@
 # jlreq-tcf
 
-This package provides commands to arrange footnotes into two columns (left and right) at the bottom of the page, designed to visually blend with the `jlreq` document class.
+This package provides commands to arrange footnotes into two columns (left and right) at the bottom of the page, designed to visually blend with the [`jlreq`](https://github.com/abenori/jlreq/tree/master?tab=readme-ov-file) document class.
 
 For full details and visual examples, please refer to the [documentation](docs/documentation.pdf).
 
