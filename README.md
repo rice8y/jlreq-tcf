@@ -1,4 +1,4 @@
-# jlreq-ftc
+# jlreq-tcf
 
 This package provides commands to arrange footnotes into two columns (left and right) at the bottom of the page, designed to visually blend with the `jlreq` document class.
 
@@ -16,14 +16,14 @@ l3build install
 
 ### Manual Installation
 
-Alternatively, you can copy `jlreq-ftc.sty` to a location where LaTeX can find it (e.g., your local `texmf` tree or the same directory as your project `.tex` file).
+Alternatively, you can copy `jlreq-tcf.sty` to a location where LaTeX can find it (e.g., your local `texmf` tree or the same directory as your project `.tex` file).
 
 ## Usage
 
 Load the package in your preamble:
 
 ```latex
-\usepackage{jlreq-ftc}
+\usepackage{jlreq-tcf}
 ```
 
 ## Command Specifications
@@ -60,7 +60,7 @@ You can separate the mark generation from the text definition. This is useful wh
 
 ```latex
 \documentclass{jlreq}
-\usepackage{jlreq-ftc}
+\usepackage{jlreq-tcf}
 \usepackage{bxjalipsum}
 
 \begin{document}
