@@ -1,0 +1,279 @@
+%%
+%% This is file `jlreq-ftc.sty'
+%%
+%% A LaTeX package providing two-column footnotes
+%% compatible with the jlreq class.
+%%
+%% Features:
+%%  - \footnoteA{...}, \footnoteB{...} : Mark + Text
+%%  - \footnotemarkA, \footnotemarkB   : Mark only (increments counter)
+%%  - \footnotetextA, \footnotetextB   : Text only (fills footnote list)
+%%
+%% Author: Eito Yoneyama
+%% Created: 2026/01/08
+%%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{jlreq-ftc}[2026/01/08 Two-column footnotes with jlreq compatibility]
+\RequirePackage{etoolbox}
+
+\makeatletter
+
+% ------------------------------------------------------------
+% jlreq fallback / parameters
+% ------------------------------------------------------------
+\@ifclassloaded{jlreq}{
+  \providecommand{\jlreq@zw}{1zw}
+  \providecommand{\jlreq@zh}{1zh}
+  \providecommand{\jlreq@omotekeiwidth}{0.12mm}
+  \providecommand{\jlreq@footnote@rulewidth}{0.333\columnwidth}
+}{
+  \providecommand{\jlreq@zw}{1zw}
+  \providecommand{\jlreq@zh}{1zh}
+  \providecommand{\jlreq@omotekeiwidth}{0.12mm}
+  \providecommand{\jlreq@footnote@rulewidth}{0.333\columnwidth}
+
+  \setlength{\skip\footins}{%
+    \dimexpr\baselineskip - 1\jlreq@zh\relax plus 1\jlreq@zh
+  }
+
+  \begingroup
+    \footnotesize
+    \edef\jlreq@do{%
+      \unexpanded{\setlength{\footnotesep}}{\the\dimexpr .7\baselineskip\relax}%
+      \unexpanded{\def\footnoterule}{%
+        \unexpanded{\hrule width \jlreq@footnote@rulewidth height \jlreq@omotekeiwidth}%
+        \noexpand\kern\the\dimexpr 1.5\baselineskip - 1\jlreq@zh\relax
+      }%
+    }
+  \expandafter\endgroup
+  \jlreq@do
+}
+
+\providecommand{\inhibitglue}{}
+
+% ------------------------------------------------------------
+% jlreq footnote indent logic
+% ------------------------------------------------------------
+\@ifclassloaded{jlreq}{
+  \@ifundefined{jlreq@footnoteindent}{
+    \if@tate
+      \def\jlreq@footnoteindent{1\jlreq@zw}
+    \else
+      \def\jlreq@footnoteindent{0pt}
+    \fi
+  }{}
+}{
+  \def\jlreq@footnoteindent{0pt}
+}
+
+% ------------------------------------------------------------
+% counters / storage
+% ------------------------------------------------------------
+\newtoks\footnotescolA
+\newtoks\footnotescolB
+\newcounter{footnotecolA}
+\newcounter{footnotecolB}
+\newcounter{twocolfootnote}
+\setcounter{twocolfootnote}{0}
+
+% ------------------------------------------------------------
+% footnote mark format (Sync with jlreq's \thefootnote)
+% ------------------------------------------------------------
+\@ifclassloaded{jlreq}{
+  \if@tate
+    \renewcommand{\thetwocolfootnote}{%
+      \jlreq@open@bracket@before@space\inhibitglue（\tatechuyoko*{\@arabic\c@twocolfootnote}）\inhibitglue
+    }
+  \else
+    \renewcommand{\thetwocolfootnote}{%
+      \arabic{twocolfootnote}\hbox{}）\inhibitglue
+    }
+  \fi
+}{
+  \renewcommand{\thetwocolfootnote}{%
+    \arabic{twocolfootnote}\hbox{}）\inhibitglue
+  }
+}
+
+% ------------------------------------------------------------
+% Internal Formatter (mimics jlreq's \@makefntext)
+% ------------------------------------------------------------
+\newcommand{\@makefntext@jlreq}[2]{%
+  \reset@font\footnotesize
+  \parskip=0pt
+  \@tempdima=\dimexpr\columnwidth - \jlreq@footnoteindent\relax
+  \@tempdimb=1\jlreq@zw
+  \divide\@tempdima by \@tempdimb
+  \multiply\@tempdima by \@tempdimb
+  
+  \def\minipage@indent{1.52\jlreq@zw} % todo: fix
+  \@tempdimc=\dimexpr
+    \columnwidth - \@tempdima - 0.0001pt - \minipage@indent\relax % todo: fix
+    % \columnwidth - \@tempdima - 0.0001pt\relax % original
+
+  \setlength{\leftskip}{\dimexpr\@tempdimc + 1\jlreq@zw\relax}%
+  \setlength{\parindent}{0pt}%
+  \noindent
+  \hbox{#1}%
+  \hskip 1\jlreq@zw
+  #2%
+  \par
+}
+
+% ------------------------------------------------------------
+% Internal List Adder
+% ------------------------------------------------------------
+\newcommand{\@addfootnotetolist}[3]{%
+  \ifnum#1=1\relax
+    \stepcounter{footnotecolA}%
+    \begingroup
+      \toks@={#3}%
+      \edef\@tempfootnote{%
+        \noexpand\def\noexpand\@thefnmark{#2}%
+        \noexpand\@makefntext@jlreq{#2}{\the\toks@}%
+      }%
+      \global\footnotescolA=\expandafter{%
+        \the\expandafter\footnotescolA\@tempfootnote
+      }%
+    \endgroup
+  \else
+    \stepcounter{footnotecolB}%
+    \begingroup
+      \toks@={#3}%
+      \edef\@tempfootnote{%
+        \noexpand\def\noexpand\@thefnmark{#2}%
+        \noexpand\@makefntext@jlreq{#2}{\the\toks@}%
+      }%
+      \global\footnotescolB=\expandafter{%
+        \the\expandafter\footnotescolB\@tempfootnote
+      }%
+    \endgroup
+  \fi
+}
+
+% ------------------------------------------------------------
+% Public Interface: Mark Only (\footnotemarkA, \footnotemarkB)
+% ------------------------------------------------------------
+\newcommand{\@printtwocolmark}[1]{%
+  \begingroup
+    \protected@edef\@currentfnmark{#1}%
+    \@ifclassloaded{jlreq}{%
+      \jlreq@hook@prenote
+      \jlreq@notemark{\@currentfnmark}%
+      \jlreq@hook@postnote
+    }{%
+      \@textsuperscript{\normalfont\@currentfnmark}%
+    }%
+  \endgroup
+}
+
+\newcommand{\footnotemarkcol}[1][]{%
+  \ifx\relax#1\relax
+    \stepcounter{twocolfootnote}%
+    \protected@edef\@tempa{\thetwocolfootnote}%
+  \else
+    \begingroup
+      \c@twocolfootnote=#1\relax
+      \protected@edef\@tempa{\thetwocolfootnote}%
+      \global\let\ftc@global@mark\@tempa
+    \endgroup
+    \let\@tempa\ftc@global@mark
+  \fi
+  \@printtwocolmark{\@tempa}%
+}
+\newcommand{\footnotemarkA}{\footnotemarkcol}
+\newcommand{\footnotemarkB}{\footnotemarkcol}
+
+% ------------------------------------------------------------
+% Public Interface: Text Only (\footnotetextA, \footnotetextB)
+% ------------------------------------------------------------
+\newcommand{\@footnotetextcol}[3]{%
+  \begingroup
+    \ifx\relax#2\relax
+      \protected@edef\@tempa{\thetwocolfootnote}%
+    \else
+      \begingroup
+        \c@twocolfootnote=#2\relax
+        \protected@edef\@tempb{\thetwocolfootnote}%
+        \global\let\ftc@global@mark\@tempb
+      \endgroup
+      \let\@tempa\ftc@global@mark
+    \fi
+    \@addfootnotetolist{#1}{\@tempa}{#3}%
+  \endgroup
+}
+
+\newcommand{\footnotetextA}[2][]{\@footnotetextcol{1}{#1}{#2}}
+\newcommand{\footnotetextB}[2][]{\@footnotetextcol{2}{#1}{#2}}
+
+% ------------------------------------------------------------
+% Public Interface: Footnote (Mark + Text)
+% ------------------------------------------------------------
+\newcommand{\footnotecol}[2][1]{%
+  \footnotemarkcol%
+  \@footnotetextcol{#1}{}{#2}%
+}
+
+\newcommand{\footnoteA}[1]{\footnotecol[1]{#1}}
+\newcommand{\footnoteB}[1]{\footnotecol[2]{#1}}
+
+% ------------------------------------------------------------
+% Output Routine
+% ------------------------------------------------------------
+\newcommand{\printtwocolumnfootnotes}{%
+  \ifnum\numexpr\value{footnotecolA}+\value{footnotecolB}>0\relax
+    \par
+    \begingroup
+      \reset@font\footnotesize
+      \vskip\skip\footins
+      \footnoterule
+      \dimen@=\dimexpr(\textwidth - \columnsep) / 2\relax
+      \nointerlineskip
+      \noindent
+      \begin{minipage}[t]{\dimen@}
+        \setlength{\parskip}{0pt}%
+        \sloppy
+        \the\footnotescolA
+      \end{minipage}%
+      \hfill
+      \begin{minipage}[t]{\dimen@}
+        \setlength{\parskip}{0pt}%
+        \sloppy
+        \the\footnotescolB
+      \end{minipage}
+    \endgroup
+    \par
+
+    \global\footnotescolA={}%
+    \global\footnotescolB={}%
+    \setcounter{footnotecolA}{0}%
+    \setcounter{footnotecolB}{0}%
+    \setcounter{twocolfootnote}{0}%
+  \fi
+}
+
+% ------------------------------------------------------------
+% Hooks
+% ------------------------------------------------------------
+\newcommand{\@insertfootnotes}{%
+  \ifnum\numexpr\value{footnotecolA}+\value{footnotecolB}>0\relax
+    \par\vspace*{\fill}
+    \printtwocolumnfootnotes
+  \fi
+}
+
+\let\@oldclearpage\clearpage
+\renewcommand{\clearpage}{%
+  \@insertfootnotes
+  \@oldclearpage
+}
+\let\@oldnewpage\newpage
+\renewcommand{\newpage}{%
+  \@insertfootnotes
+  \@oldnewpage
+}
+
+\AtEndDocument{\@insertfootnotes}
+
+\makeatother
+\endinput
