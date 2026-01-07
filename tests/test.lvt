@@ -1,0 +1,60 @@
+% Test file for jlreq-tcf package
+\input{regression-test}
+
+\documentclass{jlreq}
+\usepackage{jlreq-tcf}
+\usepackage{bxjalipsum}
+
+\START
+
+\begin{document}
+
+\TEST{footnoteA commands}{
+  \OMIT
+  \jalipsum[1]{kusamakura}~\footnoteA{左の脚注1}\par
+  \jalipsum[2]{kusamakura}~\footnoteA{左の脚注2}\par
+  \jalipsum[3]{kusamakura}~\footnoteA{左の脚注3}
+  \TIMO
+  \TYPE{footnoteA test completed}
+}
+
+\TEST{footnoteB commands}{
+  \OMIT
+  \jalipsum[4]{kusamakura}~\footnoteB{右の脚注1}\par
+  \jalipsum[5]{kusamakura}~\footnoteB{右の脚注2}\par
+  \jalipsum[6]{kusamakura}~\footnoteB{右の脚注3}
+  \TIMO
+  \TYPE{footnoteB test completed}
+}
+
+\TEST{footnotemarkA command}{
+  \OMIT
+  \jalipsum[7]{kusamakura}~\footnotemarkA
+  \TIMO
+  \TYPE{footnotemarkA test completed}
+}
+
+\TEST{footnotemarkB command}{
+  \OMIT
+  \jalipsum[8]{kusamakura}~\footnotemarkB
+  \TIMO
+  \TYPE{footnotemarkB test completed}
+}
+
+\TEST{footnotetextA command}{
+  \OMIT
+  \footnotetextA[7]{左の脚注4}
+  \TIMO
+  \TYPE{footnotetextA test completed}
+}
+
+\TEST{footnotetextB command}{
+  \OMIT
+  \footnotetextB[8]{右の脚注4}
+  \TIMO
+  \TYPE{footnotetextB test completed}
+}
+
+\end{document}
+
+\END
