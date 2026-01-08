@@ -5,15 +5,15 @@
 %% compatible with the jlreq class.
 %%
 %% Features:
-%%  - \footnoteA{...}, \footnoteB{...} : Mark + Text
-%%  - \footnotemarkA, \footnotemarkB   : Mark only (increments counter)
-%%  - \footnotetextA, \footnotetextB   : Text only (fills footnote list)
+%%  - \footnoteL{...}, \footnoteR{...} : Mark + Text
+%%  - \footnotemarkL, \footnotemarkR   : Mark only (increments counter)
+%%  - \footnotetextL, \footnotetextR   : Text only (fills footnote list)
 %%
 %% Author: Eito Yoneyama
 %% Created: 2026/01/08
 %%
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{jlreq-ftc}[2026/01/08 Two-column footnotes with jlreq compatibility]
+\ProvidesPackage{jlreq-ftc}[2026/01/08 v0.1.0  Two-column footnotes with jlreq compatibility]
 \RequirePackage{etoolbox}
 
 \makeatletter
@@ -69,10 +69,10 @@
 % ------------------------------------------------------------
 % counters / storage
 % ------------------------------------------------------------
-\newtoks\footnotescolA
-\newtoks\footnotescolB
-\newcounter{footnotecolA}
-\newcounter{footnotecolB}
+\newtoks\footnotescolL
+\newtoks\footnotescolR
+\newcounter{footnotecolL}
+\newcounter{footnotecolR}
 \newcounter{twocolfootnote}
 \setcounter{twocolfootnote}{0}
 
@@ -125,34 +125,34 @@
 % ------------------------------------------------------------
 \newcommand{\@addfootnotetolist}[3]{%
   \ifnum#1=1\relax
-    \stepcounter{footnotecolA}%
+    \stepcounter{footnotecolL}%
     \begingroup
       \toks@={#3}%
       \edef\@tempfootnote{%
         \noexpand\def\noexpand\@thefnmark{#2}%
         \noexpand\@makefntext@jlreq{#2}{\the\toks@}%
       }%
-      \global\footnotescolA=\expandafter{%
-        \the\expandafter\footnotescolA\@tempfootnote
+      \global\footnotescolL=\expandafter{%
+        \the\expandafter\footnotescolL\@tempfootnote
       }%
     \endgroup
   \else
-    \stepcounter{footnotecolB}%
+    \stepcounter{footnotecolR}%
     \begingroup
       \toks@={#3}%
       \edef\@tempfootnote{%
         \noexpand\def\noexpand\@thefnmark{#2}%
         \noexpand\@makefntext@jlreq{#2}{\the\toks@}%
       }%
-      \global\footnotescolB=\expandafter{%
-        \the\expandafter\footnotescolB\@tempfootnote
+      \global\footnotescolR=\expandafter{%
+        \the\expandafter\footnotescolR\@tempfootnote
       }%
     \endgroup
   \fi
 }
 
 % ------------------------------------------------------------
-% Public Interface: Mark Only (\footnotemarkA, \footnotemarkB)
+% Public Interface: Mark Only (\footnotemarkL, \footnotemarkR)
 % ------------------------------------------------------------
 \newcommand{\@printtwocolmark}[1]{%
   \begingroup
@@ -181,11 +181,11 @@
   \fi
   \@printtwocolmark{\@tempa}%
 }
-\newcommand{\footnotemarkA}{\footnotemarkcol}
-\newcommand{\footnotemarkB}{\footnotemarkcol}
+\newcommand{\footnotemarkL}{\footnotemarkcol}
+\newcommand{\footnotemarkR}{\footnotemarkcol}
 
 % ------------------------------------------------------------
-% Public Interface: Text Only (\footnotetextA, \footnotetextB)
+% Public Interface: Text Only (\footnotetextL, \footnotetextR)
 % ------------------------------------------------------------
 \newcommand{\@footnotetextcol}[3]{%
   \begingroup
@@ -203,8 +203,8 @@
   \endgroup
 }
 
-\newcommand{\footnotetextA}[2][]{\@footnotetextcol{1}{#1}{#2}}
-\newcommand{\footnotetextB}[2][]{\@footnotetextcol{2}{#1}{#2}}
+\newcommand{\footnotetextL}[2][]{\@footnotetextcol{1}{#1}{#2}}
+\newcommand{\footnotetextR}[2][]{\@footnotetextcol{2}{#1}{#2}}
 
 % ------------------------------------------------------------
 % Public Interface: Footnote (Mark + Text)
@@ -214,14 +214,14 @@
   \@footnotetextcol{#1}{}{#2}%
 }
 
-\newcommand{\footnoteA}[1]{\footnotecol[1]{#1}}
-\newcommand{\footnoteB}[1]{\footnotecol[2]{#1}}
+\newcommand{\footnoteL}[1]{\footnotecol[1]{#1}}
+\newcommand{\footnoteR}[1]{\footnotecol[2]{#1}}
 
 % ------------------------------------------------------------
 % Output Routine
 % ------------------------------------------------------------
 \newcommand{\printtwocolumnfootnotes}{%
-  \ifnum\numexpr\value{footnotecolA}+\value{footnotecolB}>0\relax
+  \ifnum\numexpr\value{footnotecolL}+\value{footnotecolR}>0\relax
     \par
     \begingroup
       \reset@font\footnotesize
@@ -233,21 +233,21 @@
       \begin{minipage}[t]{\dimen@}
         \setlength{\parskip}{0pt}%
         \sloppy
-        \the\footnotescolA
+        \the\footnotescolL
       \end{minipage}%
       \hfill
       \begin{minipage}[t]{\dimen@}
         \setlength{\parskip}{0pt}%
         \sloppy
-        \the\footnotescolB
+        \the\footnotescolR
       \end{minipage}
     \endgroup
     \par
 
-    \global\footnotescolA={}%
-    \global\footnotescolB={}%
-    \setcounter{footnotecolA}{0}%
-    \setcounter{footnotecolB}{0}%
+    \global\footnotescolL={}%
+    \global\footnotescolR={}%
+    \setcounter{footnotecolL}{0}%
+    \setcounter{footnotecolR}{0}%
     \setcounter{twocolfootnote}{0}%
   \fi
 }
@@ -256,7 +256,7 @@
 % Hooks
 % ------------------------------------------------------------
 \newcommand{\@insertfootnotes}{%
-  \ifnum\numexpr\value{footnotecolA}+\value{footnotecolB}>0\relax
+  \ifnum\numexpr\value{footnotecolL}+\value{footnotecolR}>0\relax
     \par\vspace*{\fill}
     \printtwocolumnfootnotes
   \fi
