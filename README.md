@@ -28,17 +28,17 @@ Load the package in your preamble:
 
 ## Command Specifications
 
-This package uses its own internal counter (shared between column A and column B) to manage footnote numbers.
+This package uses its own internal counter (shared between column L and column R) to manage footnote numbers.
 
 ### Basic Footnotes
 
 These commands insert a footnote mark and the corresponding text immediately.
 
-- **`\footnoteA{<text>}`**
+- **`\footnoteL{<text>}`**
 - Typesets a footnote in the **left-hand** column.
 - Automatically increments the internal footnote counter.
 
-- **`\footnoteB{<text>}`**
+- **`\footnoteR{<text>}`**
 - Typesets a footnote in the **right-hand** column.
 - Automatically increments the internal footnote counter.
 
@@ -46,13 +46,13 @@ These commands insert a footnote mark and the corresponding text immediately.
 
 You can separate the mark generation from the text definition. This is useful when placing footnotes in titles, tables, or other restricted environments.
 
-- **`\footnotemarkA[<num>]`** / **`\footnotemarkB[<num>]`**
-- Prints the footnote mark for the left (A) or right (B) column.
+- **`\footnotemarkL[<num>]`** / **`\footnotemarkR[<num>]`**
+- Prints the footnote mark for the left (L) or right (R) column.
 - **With `[<num>]`**: Uses the integer `<num>` as the mark number. Does **not** increment the internal counter.
 - **Without `[<num>]`**: Increments the internal counter and uses that value.
 
-- **`\footnotetextA[<num>]{<text>}`** / **`\footnotetextB[<num>]{<text>}`**
-- Defines the footnote text for the left (A) or right (B) column without printing a mark in the main text.
+- **`\footnotetextL[<num>]{<text>}`** / **`\footnotetextR[<num>]{<text>}`**
+- Defines the footnote text for the left (L) or right (R) column without printing a mark in the main text.
 - **With `[<num>]`**: Uses `<num>` as the label in the footnote area.
 - **Without `[<num>]`**: Uses the current value of the internal counter.
 
@@ -64,23 +64,23 @@ You can separate the mark generation from the text definition. This is useful wh
 \usepackage{bxjalipsum}
 
 \begin{document}
-% \footnoteA (Left column)
-\jalipsum[1]{kusamakura}~\footnoteA{左の脚注1}\par
-\jalipsum[2]{kusamakura}~\footnoteA{左の脚注2}\par
-\jalipsum[3]{kusamakura}~\footnoteA{左の脚注3}
+% \footnoteL (Left column)
+\jalipsum[1]{kusamakura}~\footnoteL{左の脚注1}\par
+\jalipsum[2]{kusamakura}~\footnoteL{左の脚注2}\par
+\jalipsum[3]{kusamakura}~\footnoteL{左の脚注3}
 
-% \footnoteB (Right column)
-\jalipsum[4]{kusamakura}~\footnoteB{右の脚注1}\par
-\jalipsum[5]{kusamakura}~\footnoteB{右の脚注2}\par
-\jalipsum[6]{kusamakura}~\footnoteB{右の脚注3}
+% \footnoteR (Right column)
+\jalipsum[4]{kusamakura}~\footnoteR{右の脚注1}\par
+\jalipsum[5]{kusamakura}~\footnoteR{右の脚注2}\par
+\jalipsum[6]{kusamakura}~\footnoteR{右の脚注3}
 
 % Separated mark and text
-\jalipsum[7]{kusamakura}~\footnotemarkA
-\jalipsum[8]{kusamakura}~\footnotemarkB
+\jalipsum[7]{kusamakura}~\footnotemarkL
+\jalipsum[8]{kusamakura}~\footnotemarkR
 
 % Text definitions for the marks above
-\footnotetextA[7]{左の脚注4}
-\footnotetextB[8]{右の脚注4}
+\footnotetextL[7]{左の脚注4}
+\footnotetextR[8]{右の脚注4}
 \end{document}
 ```
 
@@ -91,7 +91,7 @@ Please be aware of the following limitations regarding the design and implementa
 1. **Layout Emulation**:
 This package attempts to reproduce the footnote layout (rules, spacing, indentation) of the `jlreq` class. However, this is an **emulation** created using `minipage` environments and manual spacing. It does not strictly inherit the internal typesetting logic of `jlreq`. There may be slight visual discrepancies depending on the document settings.
 2. **Conflict with Standard `\footnote`**:
-**Do not use the standard `\footnote` command on the same page as `\footnoteA` or `\footnoteB`.**
+**Do not use the standard `\footnote` command on the same page as `\footnoteL` or `\footnoteR`.**
 Since this package manages its own output routine for two-column footnotes, using the standard `\footnote` command simultaneously will result in **two separate footnote blocks** appearing at the bottom of the page (one handled by LaTeX's standard mechanism and one by this package). This usage is not supported.
 3. **Long Footnotes**:
 Extremely long footnotes that exceed the available height of the page may cause the layout to break or push content off the page. The internal mechanism relies on `minipage`, which limits the ability to break long footnote text across pages.
