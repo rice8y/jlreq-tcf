@@ -1,5 +1,5 @@
 %%
-%% This is file `jlreq-ftc.sty'
+%% This is file `jlreq-tcf.sty'
 %%
 %% A LaTeX package providing two-column footnotes
 %% compatible with the jlreq class.
@@ -13,7 +13,7 @@
 %% Created: 2026/01/08
 %%
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{jlreq-ftc}[2026/01/08 v0.1.0  Two-column footnotes with jlreq compatibility]
+\ProvidesPackage{jlreq-tcf}[2026/01/08 v0.2.0 Two-column footnotes with jlreq compatibility]
 \RequirePackage{etoolbox}
 
 \makeatletter
@@ -52,21 +52,6 @@
 \providecommand{\inhibitglue}{}
 
 % ------------------------------------------------------------
-% jlreq footnote indent logic
-% ------------------------------------------------------------
-\@ifclassloaded{jlreq}{
-  \@ifundefined{jlreq@footnoteindent}{
-    \if@tate
-      \def\jlreq@footnoteindent{1\jlreq@zw}
-    \else
-      \def\jlreq@footnoteindent{0pt}
-    \fi
-  }{}
-}{
-  \def\jlreq@footnoteindent{0pt}
-}
-
-% ------------------------------------------------------------
 % counters / storage
 % ------------------------------------------------------------
 \newtoks\footnotescolL
@@ -77,7 +62,7 @@
 \setcounter{twocolfootnote}{0}
 
 % ------------------------------------------------------------
-% footnote mark format (Sync with jlreq's \thefootnote)
+% footnote mark format
 % ------------------------------------------------------------
 \@ifclassloaded{jlreq}{
   \if@tate
@@ -101,20 +86,24 @@
 \newcommand{\@makefntext@jlreq}[2]{%
   \reset@font\footnotesize
   \parskip=0pt
-  \@tempdima=\dimexpr\columnwidth - \jlreq@footnoteindent\relax
+  \parindent=1\jlreq@zw
+
+  \@tempdima=\dimexpr\columnwidth - 1\jlreq@zw\relax
   \@tempdimb=1\jlreq@zw
   \divide\@tempdima by \@tempdimb
   \multiply\@tempdima by \@tempdimb
   
-  \def\minipage@indent{1.52\jlreq@zw} % todo: fix
-  \@tempdimc=\dimexpr
-    \columnwidth - \@tempdima - 0.0001pt - \minipage@indent\relax % todo: fix
-    % \columnwidth - \@tempdima - 0.0001pt\relax % original
+  \@tempdimc=\dimexpr\columnwidth - \@tempdima - 0.0001pt\relax
 
   \setlength{\leftskip}{\dimexpr\@tempdimc + 1\jlreq@zw\relax}%
-  \setlength{\parindent}{0pt}%
+  
   \noindent
-  \hbox{#1}%
+  \hskip -1\jlreq@zw
+  \ifdefined\jlreq@referencemark@format
+    \hbox{\jlreq@referencemark@format{#1}}%
+  \else
+    \hbox{#1}%
+  \fi
   \hskip 1\jlreq@zw
   #2%
   \par
@@ -127,10 +116,13 @@
   \ifnum#1=1\relax
     \stepcounter{footnotecolL}%
     \begingroup
-      \toks@={#3}%
+      \toks@={\rule\z@\footnotesep\ignorespaces#3\@finalstrut\strutbox}%
       \edef\@tempfootnote{%
-        \noexpand\def\noexpand\@thefnmark{#2}%
-        \noexpand\@makefntext@jlreq{#2}{\the\toks@}%
+        \noexpand\begingroup
+          \noexpand\def\noexpand\@thefnmark{#2}%
+          \noexpand\@makefntext@jlreq{#2}{\unexpanded\expandafter{\the\toks@}}%
+          \noexpand\par
+        \noexpand\endgroup
       }%
       \global\footnotescolL=\expandafter{%
         \the\expandafter\footnotescolL\@tempfootnote
@@ -139,10 +131,13 @@
   \else
     \stepcounter{footnotecolR}%
     \begingroup
-      \toks@={#3}%
+      \toks@={\rule\z@\footnotesep\ignorespaces#3\@finalstrut\strutbox}%
       \edef\@tempfootnote{%
-        \noexpand\def\noexpand\@thefnmark{#2}%
-        \noexpand\@makefntext@jlreq{#2}{\the\toks@}%
+        \noexpand\begingroup
+          \noexpand\def\noexpand\@thefnmark{#2}%
+          \noexpand\@makefntext@jlreq{#2}{\unexpanded\expandafter{\the\toks@}}%
+          \noexpand\par
+        \noexpand\endgroup
       }%
       \global\footnotescolR=\expandafter{%
         \the\expandafter\footnotescolR\@tempfootnote
@@ -152,7 +147,7 @@
 }
 
 % ------------------------------------------------------------
-% Public Interface: Mark Only (\footnotemarkL, \footnotemarkR)
+% Public Interface: Mark Only
 % ------------------------------------------------------------
 \newcommand{\@printtwocolmark}[1]{%
   \begingroup
@@ -185,7 +180,7 @@
 \newcommand{\footnotemarkR}{\footnotemarkcol}
 
 % ------------------------------------------------------------
-% Public Interface: Text Only (\footnotetextL, \footnotetextR)
+% Public Interface: Text Only
 % ------------------------------------------------------------
 \newcommand{\@footnotetextcol}[3]{%
   \begingroup
@@ -207,7 +202,7 @@
 \newcommand{\footnotetextR}[2][]{\@footnotetextcol{2}{#1}{#2}}
 
 % ------------------------------------------------------------
-% Public Interface: Footnote (Mark + Text)
+% Public Interface: Footnote
 % ------------------------------------------------------------
 \newcommand{\footnotecol}[2][1]{%
   \footnotemarkcol%
@@ -228,16 +223,27 @@
       \vskip\skip\footins
       \footnoterule
       \dimen@=\dimexpr(\textwidth - \columnsep) / 2\relax
+      
       \nointerlineskip
       \noindent
       \begin{minipage}[t]{\dimen@}
+        \footnotesize
         \setlength{\parskip}{0pt}%
+        \ifdefined\jlreq@zh
+          \setlength\lineskip{.1\jlreq@zh}%
+          \setlength\normallineskip{.1\jlreq@zh}%
+        \fi
         \sloppy
         \the\footnotescolL
       \end{minipage}%
       \hfill
       \begin{minipage}[t]{\dimen@}
+        \footnotesize
         \setlength{\parskip}{0pt}%
+        \ifdefined\jlreq@zh
+          \setlength\lineskip{.1\jlreq@zh}%
+          \setlength\normallineskip{.1\jlreq@zh}%
+        \fi
         \sloppy
         \the\footnotescolR
       \end{minipage}
