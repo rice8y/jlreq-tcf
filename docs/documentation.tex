@@ -1,4 +1,5 @@
 \documentclass[a4paper]{article}
+\usepackage{luatexja}
 \usepackage{graphicx}
 \usepackage{lmodern}
 \usepackage{listings}
@@ -33,7 +34,7 @@
 \tableofcontents
 
 \section{Introduction}
-Standard \LaTeX\ footnotes generally stack vertically in a single column. In Japanese typesetting contexts, it is sometimes desirable to split footnotes into two columns to efficiently use vertical space. This package provides \texttt{\textbackslash footnoteA} (left column) and \texttt{\textbackslash footnoteB} (right column) to achieve this layout.
+Standard \LaTeX\ footnotes generally stack vertically in a single column. In Japanese typesetting contexts, it is sometimes desirable to split footnotes into two columns to efficiently use vertical space. This package provides \texttt{\textbackslash footnoteL} (left column) and \texttt{\textbackslash footnoteR} (right column) to achieve this layout.
 
 \section{Installation}
 \subsection{Using l3build}
@@ -56,13 +57,13 @@ To use this package, load it in your preamble. Note that this package is intende
 
 \section{Command Specifications}
 
-This package uses its own internal counter (shared between A and B) to manage footnote numbers.
+This package uses its own internal counter (shared between L and R) to manage footnote numbers.
 
 \subsection{Basic Footnote Commands}
 These commands allow you to insert footnotes directly, similar to the standard \texttt{\textbackslash footnote} command.
 
 \begin{description}
-    \item[\texttt{\textbackslash footnoteA\{<text>\}}]
+    \item[\texttt{\textbackslash footnoteL\{<text>\}}]
     Typesets a footnote in the \textbf{left-hand} column.
     \begin{itemize}
         \item Automatically increments the footnote counter.
@@ -70,10 +71,10 @@ These commands allow you to insert footnotes directly, similar to the standard \
         \item Adds \texttt{<text>} to the left column queue at the bottom of the page.
     \end{itemize}
     
-    \item[\texttt{\textbackslash footnoteB\{<text>\}}]
+    \item[\texttt{\textbackslash footnoteR\{<text>\}}]
     Typesets a footnote in the \textbf{right-hand} column.
     \begin{itemize}
-        \item Same behavior as \texttt{\textbackslash footnoteA}, but targets the right column.
+        \item Same behavior as \texttt{\textbackslash footnoteL}, but targets the right column.
     \end{itemize}
 \end{description}
 
@@ -81,25 +82,25 @@ These commands allow you to insert footnotes directly, similar to the standard \
 You can separate the mark generation from the text definition. This is useful when placing footnotes in titles, tables, or other restricted environments.
 
 \begin{description}
-    \item[\texttt{\textbackslash footnotemarkA[<num>]}]
+    \item[\texttt{\textbackslash footnotemarkL[<num>]}]
     Prints the footnote mark for the left column.
     \begin{itemize}
         \item \textbf{With \texttt{[<num>]}:} Uses the integer \texttt{<num>} as the mark number. Does \textbf{not} increment the internal counter.
         \item \textbf{Without \texttt{[<num>]}:} Increments the internal counter and uses that value.
     \end{itemize}
     
-    \item[\texttt{\textbackslash footnotemarkB[<num>]}]
-    Prints the footnote mark for the right column. Arguments behave the same as \texttt{\textbackslash footnotemarkA}.
+    \item[\texttt{\textbackslash footnotemarkR[<num>]}]
+    Prints the footnote mark for the right column. Arguments behave the same as \texttt{\textbackslash footnotemarkL}.
 
-    \item[\texttt{\textbackslash footnotetextA[<num>]\{<text>\}}]
+    \item[\texttt{\textbackslash footnotetextL[<num>]\{<text>\}}]
     Defines the footnote text for the left column without printing a mark in the main text.
     \begin{itemize}
         \item \textbf{With \texttt{[<num>]}:} Uses \texttt{<num>} as the label in the footnote area.
         \item \textbf{Without \texttt{[<num>]}:} Uses the current value of the internal counter.
     \end{itemize}
 
-    \item[\texttt{\textbackslash footnotetextB[<num>]\{<text>\}}]
-    Defines the footnote text for the right column. Arguments behave the same as \texttt{\textbackslash footnotetextA}.
+    \item[\texttt{\textbackslash footnotetextR[<num>]\{<text>\}}]
+    Defines the footnote text for the right column. Arguments behave the same as \texttt{\textbackslash footnotetextL}.
 \end{description}
 
 \section{Visual Example}
@@ -113,27 +114,27 @@ Since this documentation is typeset in the \texttt{article} class, the example b
 \usepackage{bxjalipsum}
 
 \begin{document}
-% \footnoteA
-\jalipsum[1]{kusamakura}~\footnoteA{左の脚注1}\par
-\jalipsum[2]{kusamakura}~\footnoteA{左の脚注2}\par
-\jalipsum[3]{kusamakura}~\footnoteA{左の脚注3}
+% \footnoteL
+\jalipsum[1]{kusamakura}~\footnoteL{左の脚注1}\par
+\jalipsum[2]{kusamakura}~\footnoteL{左の脚注2}\par
+\jalipsum[3]{kusamakura}~\footnoteL{左の脚注3}
 
-% \footnoteB
-\jalipsum[4]{kusamakura}~\footnoteB{右の脚注1}\par
-\jalipsum[5]{kusamakura}~\footnoteB{右の脚注2}\par
-\jalipsum[6]{kusamakura}~\footnoteB{右の脚注3}
+% \footnoteR
+\jalipsum[4]{kusamakura}~\footnoteR{右の脚注1}\par
+\jalipsum[5]{kusamakura}~\footnoteR{右の脚注2}\par
+\jalipsum[6]{kusamakura}~\footnoteR{右の脚注3}
 
-% \footnotemarkA
-\jalipsum[7]{kusamakura}~\footnotemarkA
+% \footnotemarkL
+\jalipsum[7]{kusamakura}~\footnotemarkL
 
-% \footnotemarkB
-\jalipsum[8]{kusamakura}~\footnotemarkB
+% \footnotemarkR
+\jalipsum[8]{kusamakura}~\footnotemarkR
 
-% \footnotetextA
-\footnotetextA[7]{左の脚注4}
+% \footnotetextL
+\footnotetextL[7]{左の脚注4}
 
-% \footnotetextB
-\footnotetextB[8]{右の脚注4}
+% \footnotetextR
+\footnotetextR[8]{右の脚注4}
 \end{document}
 \end{lstlisting}
 
@@ -152,7 +153,7 @@ Please carefully read the following limitations before using this package.
 This package strives to reproduce the visual layout (rule width, spacing, indentation) of the \textsf{jlreq} class. However, please note that this is an \textbf{emulation}. The package manually constructs the footnote area using \texttt{minipage} environments rather than utilizing the internal hooks of the \textsf{jlreq} class. Consequently, slight differences in spacing or behavior may occur compared to native \textsf{jlreq} footnotes.
 
 \subsection{Coexistence with Standard Footnotes}
-\textbf{Do not use} the standard \texttt{\textbackslash footnote} command on the same page as \texttt{\textbackslash footnoteA} or \texttt{\textbackslash footnoteB}.
+\textbf{Do not use} the standard \texttt{\textbackslash footnote} command on the same page as \texttt{\textbackslash footnoteL} or \texttt{\textbackslash footnoteR}.
 
 Since this package constructs a custom container for its footnotes, using the standard command concurrently will cause two separate footnote blocks to be printed at the bottom of the page: one generated by the standard \LaTeX\ output routine, and another generated by this package. We do not provide a workaround for this, as the package assumes you will use the two-column format exclusively for pages where it is active.
 
